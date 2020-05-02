@@ -11,21 +11,22 @@ operations = []
 #Clears default 0 displayed to display number pressed
 #If previous number in equation being displayed, clear way for new number
 def numberPressed(number):
-    if numberEntry.get() == "0":
-        numberEntry.delete(0, END)
+    if text.get() == "0":
+        text.set("")
     if len(numbers) > 0:
         if numbers[0]%1 ==0:
             prevNum = int(numbers[0])
         else:
             prevNum = float(numbers[0])
-        if len(operations) > 0 and numberEntry.get() == str(prevNum):
-            numberEntry.delete(0, END)
-    numberEntry.insert(END, number)
+        if len(operations) > 0 and text.get() == str(prevNum):
+            text.set("")
+            #numberEntry.delete(0, END)
+    text.set(text.get() + str(number))
+    #numberEntry.insert(END, number)
 #function called when clear button is pressed
 #clears the display and numbers/operations arrays, then displays default 0
 def clearPressed():
-    numberEntry.delete(0, END)
-    numberEntry.insert(END, 0)
+    text.set("0")
     numbers.clear()
     operations.clear()
 #function called when any operation button is pressed
@@ -34,22 +35,23 @@ def clearPressed():
 #If the operation is =, calculate the final result
 def operationPressed(operation):
     if operation == "=":
-        numbers.append(float(numberEntry.get()))
+        print(text.get())
+        if float(text.get()) != 0:
+            numbers.append(float(text.get()))
+        print(numbers)
         calculate()
     elif operation == "%":
-        newNum = float(numberEntry.get())/100
+        newNum = float(text.get())/100
         numbers.clear()
         operations.clear()
-        numberEntry.delete(0, END)
-        numberEntry.insert(END, newNum)
+        text.set(str(newNum))
     elif operation == "negate":
-        newNum = float(numberEntry.get())*(-1)
+        newNum = float(text.get())*(-1)
         if newNum%1 ==0:
             newNum = int(newNum)
-        numberEntry.delete(0, END)
-        numberEntry.insert(END, str(newNum))
+        text.set(str(newNum))
     else:
-        numbers.append(float(numberEntry.get()))
+        numbers.append(float(text.get()))
         operations.append(operation)
         print(numbers)
         print(operations)
@@ -57,7 +59,10 @@ def operationPressed(operation):
 #Loops until there is only 1 or less elements in numbers array
 #pops elements from numbers and operations to calculate final value
 def calculate():
-    newNum = 0
+    if float(text.get())%1 ==0:
+        newNum = int(text.get())
+    else:
+        newNum = float(text.get())
     while len(numbers) > 1:
         num1 = numbers.pop(0)
         num2 = numbers.pop(0)
@@ -71,7 +76,7 @@ def calculate():
         else:
             newNum = float(num1)/num2
             print(newNum)
-    if len(numbers) == 1:
+    if len(operations) == 1 :
         num1 = numbers.pop(0)
         op = operations.pop(0)
         if op == "+":
@@ -86,12 +91,12 @@ def calculate():
         newNum = int(newNum)
     else:
         newNum = float(newNum)
-    numberEntry.delete(0, END)
-    numberEntry.insert(0, str(newNum))
+    text.set(str(newNum))
+    numbers.clear()
     operations.clear()
-
+text = StringVar()
 #Create entry window to display numbers clicked on by user
-numberEntry = Entry(root, width = 30, borderwidth = 10, bg = "#000000", fg = "#ffffff")
+numberEntry = Entry(root, width = 30, borderwidth = 10, bg = "#000000", fg = "#ffffff", textvariable = text, state = DISABLED)
 #Create buttons for the 10 essential digits
 button1 = Button(root, text = "1", padx = 20, pady = 10, bg = '#000000', fg = 'white', width = 2, command=lambda:numberPressed(1))
 button2 = Button(root, text = "2", padx = 20, pady = 10, bg = "#000000", fg = "white", width = 2, command=lambda:numberPressed(2))
@@ -114,6 +119,24 @@ decimalButton = Button(root, text = ".", padx = 20, pady = 5, bg = "gray", fg = 
 negateButton = Button(root, text = "+/-", padx = 20, pady = 5, bg = "gray", fg = "black", width = 2, command=lambda:operationPressed("negate"))
 percentButton = Button(root, text = "%", padx = 20, pady = 5, bg = "gray", fg = "black", width = 2, command=lambda:operationPressed("%"))
 clearButton = Button(root, text = "C", padx = 20, pady = 5, bg = "gray", fg = "black", width = 2, command = clearPressed)
+
+root.bind('1', lambda event: numberPressed(1))
+root.bind('2', lambda event: numberPressed(2))
+root.bind('3', lambda event: numberPressed(3))
+root.bind('4', lambda event: numberPressed(4))
+root.bind('5', lambda event: numberPressed(5))
+root.bind('6', lambda event: numberPressed(6))
+root.bind('7', lambda event: numberPressed(7))
+root.bind('8', lambda event: numberPressed(8))
+root.bind('9', lambda event: numberPressed(9))
+root.bind('0', lambda event: numberPressed(0))
+root.bind('<Return>', lambda event: operationPressed("="))
+root.bind('+', lambda event: operationPressed("+"))
+root.bind('-', lambda event: operationPressed("-"))
+root.bind('*', lambda event: operationPressed("*"))
+root.bind('/', lambda event: operationPressed("/"))
+root.bind('%', lambda event: operationPressed("%"))
+root.bind('n', lambda event: operationPressed("negate"))
 
 #Position the Entry object at the top of the window spanning 3 columns
 numberEntry.grid(row = 0, column = 0, columnspan = 4)
@@ -141,5 +164,6 @@ clearButton.grid(row = 1, column = 0)
 negateButton.grid(row = 1, column = 1)
 percentButton.grid(row = 1, column= 2)
 
-numberEntry.insert(0, "0")
+text.set("0")
+print(text.get())
 root.mainloop()
