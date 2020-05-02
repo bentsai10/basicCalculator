@@ -137,6 +137,7 @@ root.bind('*', lambda event: operationPressed("*"))
 root.bind('/', lambda event: operationPressed("/"))
 root.bind('%', lambda event: operationPressed("%"))
 root.bind('n', lambda event: operationPressed("negate"))
+root.bind('c', lambda event: clearPressed())
 
 #Position the Entry object at the top of the window spanning 3 columns
 numberEntry.grid(row = 0, column = 0, columnspan = 4)
